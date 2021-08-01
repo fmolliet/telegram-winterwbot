@@ -8,7 +8,8 @@
     "watch": "tsc -p tsconfig.json -w --downlevelIteration",
     "build": "tsc -p tsconfig.json --downlevelIteration",
     "test": "mocha -r ts-node/register \"tests/**/*.spec.ts\"",
-    "local": "nodemon dist/app.js -e js"
+    "local": "tsc -p tsconfig.json --downlevelIteration && nodemon dist/app.js -e js",
+    "prod": "tsc -p tsconfig.json --downlevelIteration && node dist/app.js"
   },
   "keywords": [],
   "author": "",

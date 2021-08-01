@@ -9,6 +9,7 @@ bot.command('status', async (ctx) => {
         const response = await status()
 
         if (response.status == 200) {
+            console.log("recebi request de status")
             await ctx.reply(`Google service: ✅`)
         } else {
             await ctx.reply(`Google service: ❌`)
