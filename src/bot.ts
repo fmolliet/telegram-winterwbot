@@ -1,5 +1,6 @@
 import { Telegraf } from 'telegraf';
 import status from './commands/status';
+import { Logger } from './helper/Logger';
 
 const bot = new Telegraf(process.env.BOT_TOKEN || '');
 
@@ -9,7 +10,7 @@ bot.command('status', async (ctx) => {
         const response = await status()
 
         if (response.status == 200) {
-            console.log("recebi request de status")
+            Logger.info("Recebido request de status.")
             await ctx.reply(`Google service: ✅`)
         } else {
             await ctx.reply(`Google service: ❌`)
