@@ -1,3 +1,4 @@
+import { Context } from "telegraf";
 import { CommandParams } from "./CommandParams";
 
 export interface Command {
@@ -15,6 +16,6 @@ export interface Command {
     
     getCommandName() : string|void;
     
-    execute( param: CommandParams ): void
+    execute( param: Context ): void
     
 }

@@ -1,38 +1,56 @@
 import { Context, Telegraf } from 'telegraf';
 import { Container } from 'typedi';
-import status from './commands/status';
+
+import glob          from 'glob';
+import { promisify } from 'util';
+
 import { Logger } from './helper/Logger';
 import TwitterService from './services/TwitterService';
+import { Command } from './interfaces';
+import Status from './commands/status';
 
+const globPromise = promisify(glob);
 class Bot {
     
     public bot: Telegraf;
     
     constructor(){
         this.bot = new Telegraf(process.env.BOT_TOKEN || '');
+        this.registers();
+        this.services();
+        this.commands();
+    }
+    
+    registers(){
+        Container.set([
+            { id: 'Status', value: new Status() },
+        ]);
     }
     
     services(){
         const TwitterInstance = Container.get(TwitterService)
     }
     
-    commands(){
-        this.bot.command('status', async (ctx) => {
+    async commands(){
+        
+        const files = await globPromise('src/commands/*.ts');
+            
+        for await (const file of files) {
 
             try {
-                const response = await status()
-        
-                if (response.status == 200) {
-                    Logger.info("Recebido request de status.")
-                    await ctx.reply(`Google service: ✅`)
-                } else {
-                    await ctx.reply(`Google service: ❌`)
-                }
-        
-            } catch(error) {
-                console.error(error)
+                const command : Command = Container.get(
+                    file.replace('src/commands/','').replace('.ts','')
+                );
+                
+                console.log(command)
+                
+                this.bot.command(command.name, command.execute)
+            } catch ( err ){
+                Logger.error(err.message)
             }
-        });
+
+        }
+
     }
     
     public start(): void{
